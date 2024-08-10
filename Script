@@ -7,7 +7,7 @@ local player = Players.LocalPlayer
 
 -- Create the main ScreenGui
 local gui = Instance.new("ScreenGui")
-gui.Name = "MGui" -- Changed to reflect the new key
+gui.Name = "MGui" -- Changed from "BGui" to "MGui"
 gui.ResetOnSpawn = false -- Ensure the GUI doesn't disappear on reset
 gui.Parent = CoreGui -- Set the GUI parent to CoreGui for the nicer look
 
@@ -29,62 +29,63 @@ UICornerOuter.CornerRadius = UDim.new(0, 20)
 UICornerOuter.Parent = frame
 
 -- Create the main button
-local cButton = Instance.new("TextButton")
-cButton.Name = "MButton" -- Changed to reflect the new key
-cButton.Size = UDim2.new(0, 180, 0, 60)
-cButton.Position = UDim2.new(0.5, -90, 0.5, -30)
-cButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50) -- Dark grey background
-cButton.BorderSizePixel = 0
-cButton.TextColor3 = Color3.fromRGB(255, 255, 255) -- White text
-cButton.Text = "M Gui Off" -- Initial button text
-cButton.Font = Enum.Font.SourceSans
-cButton.TextSize = 24
-cButton.TextScaled = true -- Makes the text larger
-cButton.Parent = frame
+local mButton = Instance.new("TextButton")
+mButton.Name = "MButton" -- Changed from "BButton" to "MButton"
+mButton.Size = UDim2.new(0, 180, 0, 60)
+mButton.Position = UDim2.new(0.5, -90, 0.5, -30)
+mButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50) -- Dark grey background
+mButton.BorderSizePixel = 0
+mButton.TextColor3 = Color3.fromRGB(255, 255, 255) -- White text
+mButton.Text = "M Gui" -- Changed from "B Gui" to "M Gui"
+mButton.Font = Enum.Font.SourceSans
+mButton.TextSize = 24
+mButton.TextScaled = true -- Makes the text larger
+mButton.Parent = frame
 
 -- Add rounded corners to the button
 local UICornerButton = Instance.new("UICorner")
 UICornerButton.CornerRadius = UDim.new(0, 10)
-UICornerButton.Parent = cButton
-
--- Toggle state
-local isGuiOn = false
+UICornerButton.Parent = mButton
 
 -- Button click event
-cButton.MouseButton1Click:Connect(function()
-    isGuiOn = not isGuiOn
-    cButton.Text = isGuiOn and "M Gui On" or "M Gui Off"
-
-    -- Trigger the M key event
+mButton.MouseButton1Click:Connect(function()
     local vim = game:GetService("VirtualInputManager")
-    vim:SendKeyEvent(true, Enum.KeyCode.M, false, game)
+    vim:SendKeyEvent(true, Enum.KeyCode.M, false, game) -- Changed from "B" to "M"
 end)
 
--- Key press event to toggle M Gui
+-- Key press event to send the key press
 UserInputService.InputBegan:Connect(function(input, isProcessed)
     if isProcessed then return end
-    if input.KeyCode == Enum.KeyCode.M then -- Key to toggle
-        isGuiOn = not isGuiOn
-        cButton.Text = isGuiOn and "M Gui On" or "M Gui Off"
+    if input.KeyCode == Enum.KeyCode.M then -- Key to send
+        local vim = game:GetService("VirtualInputManager")
+        vim:SendKeyEvent(true, Enum.KeyCode.M, false, game) -- Changed from "B" to "M"
     end
 end)
+
+-- Variable to track if the notification has been shown
+local notificationShown = false
 
 -- Chat command to kill the GUI
 player.Chatted:Connect(function(message)
     if message:lower() == "/e killgui" then
-        gui:Destroy()
-        -- Display notification
-        StarterGui:SetCore("SendNotification", {
-            Title = "Info",
-            Text = "Type /e killgui To Kill The Gui",
-            Duration = 15, -- 15 seconds notification
-        })
+        if gui then
+            gui:Destroy()
+            if not notificationShown then
+                -- Display notification
+                StarterGui:SetCore("SendNotification", {
+                    Title = "Info";
+                    Text = "GUI has been removed.";
+                    Duration = 15; -- 15 seconds notification
+                })
+                notificationShown = true
+            end
+        end
     end
 end)
 
 -- Display notification when the GUI is created
 StarterGui:SetCore("SendNotification", {
-    Title = "Info",
-    Text = "Type /e killgui To Kill The Gui",
-    Duration = 15, -- 15 seconds notification
+    Title = "Info";
+    Text = "Type /e killgui To Kill The Gui";
+    Duration = 15; -- 15 seconds notification
 })
